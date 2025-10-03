@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Moments Together</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Quicksand:wght@300;400;500;600&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #ffeef8 0%, #ffe0f0 50%, #fff5f8 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .doodle {
+            position: absolute;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        .doodle:nth-child(1) { top: 10%; left: 5%; animation-delay: 0s; }
+        .doodle:nth-child(2) { top: 20%; right: 10%; animation-delay: 1s; }
+        .doodle:nth-child(3) { top: 40%; left: 15%; animation-delay: 2s; }
+        .doodle:nth-child(4) { top: 60%; right: 20%; animation-delay: 3s; }
+        .doodle:nth-child(5) { top: 80%; left: 10%; animation-delay: 4s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(5deg); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 3.5rem;
+            color: #d63384;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(214, 51, 132, 0.1);
+        }
+
+        .subtitle {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+            color: #8e44ad;
+            font-weight: 300;
+        }
+
+        /* Desktop Grid Layout */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        /* Mobile Carousel Layout */
+        .gallery-carousel {
+            display: none;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            padding-bottom: 1rem;
+            margin-bottom: 3rem;
+        }
+
+        .carousel-container {
+            display: flex;
+            gap: 1.5rem;
+            padding: 0 1rem;
+        }
+
+        .memory-card {
+            background: white;
+            border-radius: 20px;
+            padding: 1rem;
+            box-shadow: 0 10px 30px rgba(214, 51, 132, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            min-width: 280px;
+            scroll-snap-align: center;
+        }
+
+        .memory-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(214, 51, 132, 0.2);
+        }
+
+        .memory-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(45deg, #ff9a9e, #fecfef);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            position: relative;
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            /* Default background for non-image cards */
+            background-color: #ff9a9e;
+        }
+
+        /* NEW: Class for fallback/placeholder image state for mobile */
+        .memory-image.placeholder {
+            background: linear-gradient(45deg, #ff9a9e, #fecfef);
+        }
+
+        .memory-image.placeholder::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .memory-message {
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .tooltip {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(214, 51, 132, 0.9);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            z-index: 100;
+        }
+
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: rgba(214, 51, 132, 0.9);
+        }
+
+        .cta-button {
+            display: block;
+            margin: 2rem auto;
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #ff6b9d, #ff8fab);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 500;
+            font-size: 1.1rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(255, 107, 157, 0.3);
+            transition: all 0.3s ease;
+            max-width: 300px;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(255, 107, 157, 0.4);
+        }
+
+        .floating-heart {
+            position: absolute;
+            animation: floatHeart 4s linear infinite;
+            pointer-events: none;
+            font-size: 1.5rem;
+            opacity: 0;
+        }
+
+        @keyframes floatHeart {
+            0% {
+                opacity: 1;
+                transform: translateY(0) rotate(0deg);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) rotate(360deg);
+            }
+        }
+
+        /* Mobile Styles */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .title {
+                font-size: 2.5rem;
+            }
+
+            .gallery-grid {
+                display: grid !important;
+            }
+
+            .gallery-carousel {
+                display: none !important;
+            }
+
+            .memory-card {
+                min-width: 250px;
+            }
+
+            .memory-image {
+                height: 180px;
+            }
+
+            .memory-card.tapped {
+                transform: scale(0.95);
+            }
+
+            .memory-card.tapped .memory-message {
+                color: #d63384;
+                font-weight: 500;
+            }
+        }
+
+        /* Instructions for adding photos */
+        .photo-instructions {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+            border: 1px dashed #d63384; /* Added a visible border */
+        }
+
+        .gallery-carousel::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .gallery-carousel::-webkit-scrollbar-track {
+            background: rgba(214, 51, 132, 0.1);
+            border-radius: 3px;
+        }
+
+        .gallery-carousel::-webkit-scrollbar-thumb {
+            background: rgba(214, 51, 132, 0.5);
+            border-radius: 3px;
+        }
+
+        .gallery-carousel::-webkit-scrollbar-thumb:hover {
+            background: rgba(214, 51, 132, 0.7);
+        }
+    </style>
+</head>
+<body>
+    <div class="doodle">💞</div>
+    <div class="doodle">🌈</div>
+    <div class="doodle">😘</div>
+    <div class="doodle">🧁</div>
+    <div class="doodle">💌</div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Our Moments Together</h1>
+            <p class="subtitle">Every picture tells our beautiful story 💕</p>
+        </div>
+        <div class="gallery-grid" id="desktopGallery">
+            <div class="memory-card">
+                <div class="tooltip">You looked like a dream here 😍</div>
+                <div class="memory-image" style="background-image: url('images/pic1.jpg');" alt="First date photo"></div>
+                <div class="memory-message">First aesthetic click in our first and messy date spot ✨</div>
+            </div>
+            <div class="memory-card">
+                <div class="tooltip">My heart still skips a beat... 💓</div>
+                <div class="memory-image" style="background-image: url('images/pic2.jpg');" alt="Smile photo"></div>
+                <div class="memory-message">The teekhi meethi chemistry after the choti moti fights💫</div>
+            </div>
+            <div class="memory-card">
+                <div class="tooltip">This moment is still my favorite 🌸</div>
+                <div class="memory-image" style="background-image: url('images/pic3.jpg');" alt="Adventure photo"></div>
+                <div class="memory-message">Our first adventure together which held us close😜</div>
+            </div>
+            <div class="memory-card">
+                <div class="tooltip">Your eyes >>> the universe 🌌</div>
+                <div class="memory-image" style="background-image: url('images/pic4.jpg');" alt="Closeup photo"></div>
+                <div class="memory-message">Laughing Whole-heartedly without caring about the world❤</div>
+            </div>
+            <div class="memory-card">
+                <div class="tooltip">Perfect doesn't exi... wait, you do 💫</div>
+                <div class="memory-image" style="background-image: url('images/pic5.jpg');" alt="Happy moments photo"></div>
+                <div class="memory-message">Perfectly imperfect moments in middle of the travel chaos!🫂</div>
+            </div>
+            <div class="memory-card">
+                <div class="tooltip">Still can't believe you're mine 🥰</div>
+                <div class="memory-image" style="background-image: url('images/pic6.jpg');" alt="Hug photo"></div>
+                <div class="memory-message">Lost in your wide smile while remembering our inner jokes🥹</div>
+            </div>
+        </div>
+
+        <div class="gallery-carousel" id="mobileGallery">
+            <div class="carousel-container">
+                <div class="memory-card" data-message="You looked like a dream here 😍">
+                    <div class="memory-image placeholder" alt="First date photo">📸</div>
+                    <div class="memory-message">First date magic ✨</div>
+                </div>
+                <div class="memory-card" data-message="My heart still skips a beat... 💓">
+                    <div class="memory-image placeholder" alt="Smile photo">💕</div>
+                    <div class="memory-message">That smile that stole my heart</div>
+                </div>
+                <div class="memory-card" data-message="This moment is still my favorite 🌸">
+                    <div class="memory-image placeholder" alt="Adventure photo">🌹</div>
+                    <div class="memory-message">Our first adventure together</div>
+                </div>
+                <div class="memory-card" data-message="Your eyes >>> the universe 🌌">
+                    <div class="memory-image placeholder" alt="Eyes photo">✨</div>
+                    <div class="memory-message">Lost in your beautiful eyes</div>
+                </div>
+                <div class="memory-card" data-message="Perfect doesn't exi... wait, you do 💫">
+                    <div class="memory-image placeholder" alt="Imperfect moments photo">💖</div>
+                    <div class="memory-message">Perfectly imperfect moments</div>
+                </div>
+                <div class="memory-card" data-message="Still can't believe you're mine 🥰">
+                    <div class="memory-image placeholder" alt="Butterflies photo">🦋</div>
+                    <div class="memory-message">Butterflies every single time</div>
+                </div>
+            </div>
+        </div>
+
+        <a href="reasons.html" class="cta-button">Continue to Reasons Why You're Amazing 💖</a>
+    </div>
+
+    <script>
+        // Floating heart function (optional aesthetic for mobile tap)
+        function createFloatingHeart(card) {
+            const heart = document.createElement('div');
+            heart.classList.add('floating-heart');
+            heart.textContent = '❤️';
+            
+            // Get position relative to the viewport
+            const rect = card.getBoundingClientRect();
+            
+            // Set heart position roughly over the card
+            heart.style.left = `${rect.left + rect.width / 2}px`;
+            heart.style.top = `${rect.top + rect.height / 2}px`;
+            
+            document.body.appendChild(heart);
+            
+            setTimeout(() => {
+                heart.remove();
+            }, 4000); // Matches the animation duration
+        }
+
+        // Mobile tap functionality
+        const mobileCards = document.querySelectorAll('#mobileGallery .memory-card');
+        
+        mobileCards.forEach(card => {
+            // Get the current display message text content
+            const messageEl = card.querySelector('.memory-message');
+            let originalMessage = messageEl.textContent;
+            let hoverMessage = card.dataset.message;
+            let isToggled = false;
+            
+            // Initialize isToggled based on the message content at load, 
+            // though it's safer to start with original and set isToggled=false
+            
+            card.addEventListener('click', function() {
+                
+                // Toggle the message
+                if (!isToggled) {
+                    messageEl.textContent = hoverMessage;
+                    isToggled = true;
+                } else {
+                    messageEl.textContent = originalMessage;
+                    isToggled = false;
+                }
+
+                // Add and remove the brief tap animation class
+                this.classList.add('tapped');
+                setTimeout(() => this.classList.remove('tapped'), 150);
+                
+                createFloatingHeart(this);
+            });
+        });
+
+    </script>
+</body>
+</html>
